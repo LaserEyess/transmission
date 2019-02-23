@@ -128,13 +128,6 @@ void tr_sessionSetEncryption(tr_session* session, tr_encryption_mode mode)
 ****
 ***/
 
-struct tr_bindinfo
-{
-    tr_socket_t socket;
-    tr_address addr;
-    struct event* ev;
-};
-
 static void close_bindinfo(struct tr_bindinfo* b)
 {
     if (b != NULL && b->socket != TR_BAD_SOCKET)
@@ -1920,8 +1913,6 @@ static void sessionCloseImplStart(tr_session* session)
 
     session->isClosing = true;
 
-    free_incoming_peer_port(session);
-
     if (session->isLPDEnabled)
     {
         tr_lpdUninit(session);
@@ -1938,6 +1929,7 @@ static void sessionCloseImplStart(tr_session* session)
 
     tr_verifyClose(session);
     tr_sharedClose(session);
+    free_incoming_peer_port(session);
     tr_rpcClose(&session->rpcServer);
 
     /* Close the torrents. Get the most active ones first so that

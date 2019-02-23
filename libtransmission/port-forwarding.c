@@ -97,7 +97,8 @@ static void natPulse(tr_shared* s, bool do_check)
         s->session->public_peer_port = public_peer_port;
     }
 
-    s->upnpStatus = tr_upnpPulse(s->upnp, private_peer_port, is_enabled, do_check);
+    s->upnpStatus =
+        tr_upnpPulse(s->upnp, private_peer_port, is_enabled, do_check, tr_address_to_string(&s->session->public_ipv4->addr));
 
     newStatus = tr_sharedTraversalStatus(s);
 

@@ -80,7 +80,7 @@ void tr_upnpClose(tr_upnp* handle)
 ***  Wrappers for miniupnpc functions
 **/
 
-static struct UPNPDev* tr_upnpDiscover(int msec)
+static struct UPNPDev* tr_upnpDiscover(int msec, char const* bindaddr)
 {
     struct UPNPDev* ret;
     bool have_err;
@@ -89,14 +89,14 @@ static struct UPNPDev* tr_upnpDiscover(int msec)
     int err = UPNPDISCOVER_SUCCESS;
 
 #if (MINIUPNPC_API_VERSION >= 14) /* adds ttl */
-    ret = upnpDiscover(msec, NULL, NULL, 0, 0, 2, &err);
+    ret = upnpDiscover(msec, bindaddr, NULL, 0, 0, 2, &err);
 #else
-    ret = upnpDiscover(msec, NULL, NULL, 0, 0, &err);
+    ret = upnpDiscover(msec, bindaddr, NULL, 0, 0, &err);
 #endif
 
     have_err = err != UPNPDISCOVER_SUCCESS;
 #else
-    ret = upnpDiscover(msec, NULL, NULL, 0);
+    ret = upnpDiscover(msec, bindaddr, NULL, 0);
     have_err = ret == NULL;
 #endif
 
@@ -182,7 +182,7 @@ enum
     UPNP_IGD_INVALID = 3
 };
 
-int tr_upnpPulse(tr_upnp* handle, int port, bool isEnabled, bool doPortCheck)
+int tr_upnpPulse(tr_upnp* handle, int port, bool isEnabled, bool doPortCheck, char const* bindaddr)
 {
     int ret;
 
@@ -190,7 +190,7 @@ int tr_upnpPulse(tr_upnp* handle, int port, bool isEnabled, bool doPortCheck)
     {
         struct UPNPDev* devlist;
 
-        devlist = tr_upnpDiscover(2000);
+        devlist = tr_upnpDiscover(2000, bindaddr);
 
         errno = 0;
 
